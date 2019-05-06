@@ -9,16 +9,17 @@ namespace DiskInfoAPI.Services
 {
     public class DiskService
     {
-        private List<Disk> _Disks;
+        private List<Disk> _Disks = new List<Disk>();
 
         public DiskService()
         {
             DriveInfo[] DriveInfos = DriveInfo.GetDrives();
-            _Disks = new List<Disk>();
-
+            int i = 0;
             foreach (DriveInfo d in DriveInfos)
             {
+                i++;
                 Disk disk = new Disk();
+                disk.Id = i;
                 disk.Name = d.Name;
                 disk.DriveType = d.DriveType.ToString();
                 if (d.IsReady)
@@ -34,7 +35,32 @@ namespace DiskInfoAPI.Services
 
         public List<Disk> Get()
         {
+
             return _Disks;
+        }
+
+        public DiskInfo GetDrive(int id)
+        {
+            Disk disk = _Disks.SingleOrDefault(d => d.Id == id);
+            if (disk == null)
+            {
+                return null;
+            }
+
+            DriveInfo info = new DriveInfo(disk.Name);
+
+            DiskInfo drive = new DiskInfo();
+            drive.Id = id;
+            drive.Name = info.Name;
+            drive.VolumeLable = info.VolumeLabel;
+            drive.IsReady = info.IsReady;
+            drive.DriveType = info.DriveType.ToString();
+            drive.DriveFormat = info.DriveFormat;
+            drive.TotalSize = info.TotalSize;
+            drive.TotalFreeSpace = info.TotalFreeSpace;
+            drive.AvailableFreeSpace = info.AvailableFreeSpace;
+
+            return drive;
         }
     }
 }

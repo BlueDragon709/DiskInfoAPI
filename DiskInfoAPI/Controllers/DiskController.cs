@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DiskInfoAPI.Models;
 using DiskInfoAPI.Services;
+using System.IO;
 
 namespace DiskInfoAPI.Controllers
 {
@@ -24,6 +25,21 @@ namespace DiskInfoAPI.Controllers
         public async Task<ActionResult<List<Disk>>> Get()
         {
             return _diskService.Get();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DiskInfo>> GetDriveInfo(int id)
+        {
+            
+            DiskInfo drive = _diskService.GetDrive(id);
+
+            if(drive == null)
+            {
+                return NotFound();
+            }
+
+            return drive;
+
         }
     }
 }
