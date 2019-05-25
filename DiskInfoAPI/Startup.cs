@@ -27,6 +27,7 @@ namespace DiskInfoAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<DiskService>();
+            services.AddHostedService<NotificationService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

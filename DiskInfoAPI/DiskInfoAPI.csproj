@@ -5,6 +5,7 @@
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+    <UserSecretsId>d1362908-af65-49f0-a67e-c0e11e053bda</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
