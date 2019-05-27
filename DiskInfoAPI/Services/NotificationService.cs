@@ -48,8 +48,8 @@ internal class NotificationService : IHostedService, IDisposable
 
         foreach (Disk d in disks)
         {
-            var value = ((double)d.TotalFreeSpace / (double)d.TotalSize) * 100;
-            var percentage = Convert.ToInt32(Math.Round(100 - value, 0));
+            double value = ((double)d.TotalFreeSpace / (double)d.TotalSize) * 100;
+            int percentage = Convert.ToInt32(Math.Round(100 - value, 0));
 
             if (percentage >= 90)
             {
@@ -102,7 +102,12 @@ internal class NotificationService : IHostedService, IDisposable
                 StreamReader tReader = new StreamReader(dataStream);
 
                 string sResponseFromServer = tReader.ReadToEnd();
-                //_logger.LogInformation(sResponseFromServer);
+
+                if (sResponseFromServer != null)
+                {
+                    _logger.LogInformation("NotificationService notification is send.");
+                }
+
                 tReader.Close();
                 dataStream.Close();
                 tResponse.Close();
@@ -111,6 +116,10 @@ internal class NotificationService : IHostedService, IDisposable
             {
                 _logger.LogInformation("NotificationService error sending notification. Status Code: {0}", e);
             }
+        }
+        else
+        {
+            _logger.LogInformation("NotificationService no notification send because there are no drives above 90%");
         }
     }
 
