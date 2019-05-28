@@ -22,15 +22,14 @@ namespace DiskInfoAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Disk>>> Get()
+        public List<Disk> Get()
         {
             return _diskService.Get();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<DiskInfo>> GetDriveInfo(int id)
+        public ActionResult<DiskInfo> GetDriveInfo(int id)
         {
-            
             DiskInfo drive = _diskService.GetDrive(id);
 
             if(drive == null)
@@ -39,7 +38,6 @@ namespace DiskInfoAPI.Controllers
             }
 
             return drive;
-
         }
     }
 }

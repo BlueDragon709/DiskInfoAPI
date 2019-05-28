@@ -29,7 +29,7 @@ internal class NotificationService : IHostedService, IDisposable
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("NotificationService is starting.");
+        _logger.LogInformation("[NotificationService] Starting.");
 
         _timer = new Timer(SendNotification, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
 
@@ -41,10 +41,9 @@ internal class NotificationService : IHostedService, IDisposable
         bool send = false;
         string bodyText = "";
 
-        _logger.LogInformation("NotificationService is sending a notification.");
+        _logger.LogInformation("[NotificationService] Start sending a notification.");
 
-        List<Disk> disks = new List<Disk>();
-        disks = _diskService.Get();
+        List<Disk> disks = _diskService.Get();
 
         foreach (Disk d in disks)
         {
@@ -105,7 +104,7 @@ internal class NotificationService : IHostedService, IDisposable
 
                 if (sResponseFromServer != null)
                 {
-                    _logger.LogInformation("NotificationService notification is send.");
+                    _logger.LogInformation("[NotificationService] Notification is send.");
                 }
 
                 tReader.Close();
@@ -114,18 +113,18 @@ internal class NotificationService : IHostedService, IDisposable
             }
             catch (System.Exception e)
             {
-                _logger.LogInformation("NotificationService error sending notification. Status Code: {0}", e);
+                _logger.LogInformation("[NotificationService] Error sending notification. Status Code: {0}", e);
             }
         }
         else
         {
-            _logger.LogInformation("NotificationService no notification send because there are no drives above 90%");
+            _logger.LogInformation("[NotificationService] No notification send because there are no drives above 90%");
         }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("NotificationService is stopping.");
+        _logger.LogInformation("[NotificationService] Stopping.");
 
         _timer?.Change(Timeout.Infinite, 0);
 
