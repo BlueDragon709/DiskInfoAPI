@@ -12,36 +12,24 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
 
-internal class NotificationService : IHostedService, IDisposable
+internal class NotificationService
 {
-    private readonly ILogger _logger;
     private readonly IConfiguration _config;
     private readonly DiskService _diskService = new DiskService();
-
-    private Timer _timer;
     
-    public NotificationService(ILogger<NotificationService> logger, IConfiguration config)
+    public NotificationService(IConfiguration config)
     {
-        _logger = logger;
         _config = config;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("[NotificationService] Starting.");
-
-        _timer = new Timer(SendNotification, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
-
-        return Task.CompletedTask;
-    }
-
-    private void SendNotification(object state)
+    public void SendNotification()
     {
         bool send = false;
         string bodyText = "";
 
-        _logger.LogInformation("[NotificationService] Start sending a notification.");
+        Log.Information("[NotificationService][SendNotification] Called");
 
         List<Disk> disks = _diskService.Get();
 
@@ -77,11 +65,12 @@ internal class NotificationService : IHostedService, IDisposable
         string postBody = JsonConvert.SerializeObject(payload).ToString();
         
         Byte[] byteArray = Encoding.UTF8.GetBytes(postBody);
-
-        if (send)
+        try
         {
-            try
+            if (send)
             {
+                Log.Information("[NotificationService][SendNotification] Sending a notification");
+
                 string server_api_key = _config["Google:FirebaseApiKey"];
                 string sender_id = _config["Google:SenderId"];
 
@@ -104,35 +93,22 @@ internal class NotificationService : IHostedService, IDisposable
 
                 if (sResponseFromServer != null)
                 {
-                    _logger.LogInformation("[NotificationService] Notification is send.");
+                   Log.Information("[NotificationService][SendNotification] Nofication send");
                 }
 
                 tReader.Close();
                 dataStream.Close();
                 tResponse.Close();
             }
-            catch (System.Exception e)
+            else
             {
-                _logger.LogInformation("[NotificationService] Error sending notification. Status Code: {0}", e);
+                Log.Fatal("[NotificationService][SendNotification] Failed to send notification becasue no disks above/at 90%");
             }
         }
-        else
+        catch (System.Exception e) 
         {
-            _logger.LogInformation("[NotificationService] No notification send because there are no drives above 90%");
+            Log.Fatal("[NotificationService][SendNotification] Failed to send notification, status code: {0}", e);
         }
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("[NotificationService] Stopping.");
-
-        _timer?.Change(Timeout.Infinite, 0);
-
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        _timer?.Dispose();
+        
     }
 }
