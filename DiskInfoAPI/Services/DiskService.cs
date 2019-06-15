@@ -52,13 +52,16 @@ namespace DiskInfoAPI.Services
             DiskInfo drive = new DiskInfo();
             drive.Id = id;
             drive.Name = info.Name;
-            drive.VolumeLable = info.VolumeLabel;
             drive.IsReady = info.IsReady;
             drive.DriveType = info.DriveType.ToString();
-            drive.DriveFormat = info.DriveFormat;
-            drive.TotalSize = info.TotalSize;
-            drive.TotalFreeSpace = info.TotalFreeSpace;
-            drive.AvailableFreeSpace = info.AvailableFreeSpace;
+            if (info.IsReady)
+            {
+                drive.VolumeLable = info.VolumeLabel;
+                drive.DriveFormat = info.DriveFormat;
+                drive.TotalSize = info.TotalSize;
+                drive.TotalFreeSpace = info.TotalFreeSpace;
+                drive.AvailableFreeSpace = info.AvailableFreeSpace;
+            }
 
             return drive;
         }
