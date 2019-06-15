@@ -31,7 +31,7 @@ internal class NotificationService : IHostedService, IDisposable
     {
         _logger.LogInformation("[NotificationService] Starting.");
 
-        _timer = new Timer(SendNotification, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+        _timer = new Timer(SendNotification, null, TimeSpan.Zero, TimeSpan.FromDays(7));
 
         return Task.CompletedTask;
     }
@@ -43,12 +43,13 @@ internal class NotificationService : IHostedService, IDisposable
 
         _logger.LogInformation("[NotificationService] Start sending a notification.");
 
-        List<Disk> disks = _diskService.Get();
+        List<Disk> disks = new List<Disk>();
+        disks = _diskService.Get();
 
         foreach (Disk d in disks)
         {
             double value = ((double)d.TotalFreeSpace / (double)d.TotalSize) * 100;
-            int percentage = Convert.ToInt32(Math.Round(100 - value, 0));
+            double percentage = Convert.ToDouble(Math.Round(100 - value, 2));
 
             if (percentage >= 90)
             {
